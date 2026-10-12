@@ -30,7 +30,12 @@
     for(let i=1;i<=5;i++){
       const wrap=document.createElement('span'); wrap.className='interactive-star-wrap';
       const display=document.createElement('span'); display.className='interactive-star-display';
-      display.innerHTML=starString(currentRating/2).replace('star-row','star-row picker-star-row');
+      const selectedStars=currentRating/2;
+      let oneStarHTML='';
+      if(selectedStars>=i) oneStarHTML='<span class="star-icon full" aria-hidden="true">★</span>';
+      else if(selectedStars>=i-0.5) oneStarHTML='<span class="star-icon half" aria-hidden="true"><span class="star-empty">☆</span><span class="star-filled">★</span></span>';
+      else oneStarHTML='<span class="star-icon empty" aria-hidden="true">☆</span>';
+      display.innerHTML=`<span class="star-row picker-star-row">${oneStarHTML}</span>`;
       wrap.appendChild(display);
       const left=document.createElement('button'); left.type='button'; left.className='star-hit star-hit-left';
       left.setAttribute('aria-label',`${i-0.5}점 / 10점`); left.setAttribute('title',`${i-0.5}점`);
