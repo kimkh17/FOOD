@@ -76,6 +76,15 @@
     const d=dateFromISO(selectedDate);
     $('selectedDateTitle').textContent=`${d.getMonth()+1}월 ${d.getDate()}일의 음식`;
     $('daySummary').textContent=dayReviews.length?`이 날 기록한 음식 ${dayReviews.length}개`:'';
+    // 별점이 입력된 리뷰만 평균에 포함합니다. 0은 '평점 없음'으로 취급합니다.
+    const ratedReviews = dayReviews.filter(r => Number.isFinite(Number(r.rating)) && Number(r.rating) > 0);
+    const average = ratedReviews.length
+      ? Math.round((ratedReviews.reduce((sum, r) => sum + Number(r.rating), 0) / ratedReviews.length + Number.EPSILON) * 100) / 100
+      : null;
+    $('averageCount').textContent = `평점이 있는 리뷰 ${ratedReviews.length}개`;
+    $('averageScore').textContent = average === null ? '— / 10' : `${average.toFixed(2)} / 10`;
+    $('averageStars').innerHTML = average === null ? '☆☆☆☆☆' : starString(average / 2);
+    $('averageStars').setAttribute('aria-label', average === null ? '평점 없음' : `평균 ${average.toFixed(2)}점 / 10점`);
     const root=$('reviewsList');
     // 날짜 변경 시 화면에서 사라진 리뷰의 답변 구독을 정리합니다.
     const visibleIds=new Set(dayReviews.map(r=>r.id));

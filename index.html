@@ -47,6 +47,7 @@
             <button id="addReviewTop" class="primary-button">＋ 리뷰 쓰기</button>
           </div>
           <p id="daySummary" class="day-summary"></p>
+          <div id="dailyAverage" class="daily-average" aria-live="polite"><div><span class="average-caption">오늘의 평균 평점</span><span id="averageCount" class="average-count">평점이 있는 리뷰 0개</span></div><div class="average-score-wrap"><span id="averageStars" class="average-stars">☆☆☆☆☆</span><strong id="averageScore" class="average-score">— / 10</strong></div></div>
           <div id="reviewsList" class="reviews-list"></div>
         </section>
       </div>
@@ -66,7 +67,7 @@
             <label for="foodName">음식 이름</label>
             <input id="foodName" type="text" maxlength="70" placeholder="예: 치즈 듬뿍 페퍼로니 피자" required>
             <div class="rating-label-row"><label>평점</label><span id="ratingValue" class="rating-value">선택 안 함</span></div>
-            <div id="ratingPicker" class="rating-picker" role="group" aria-label="별의 왼쪽/오른쪽을 눌러 0~10점, 반 점 단위로 선택"></div>
+            <div id="ratingPicker" class="rating-picker" role="group" aria-label="0점부터 10점까지 1점 단위 평점, 별 반 개씩 선택"></div>
             <div class="rating-hint">별 5개가 10점이에요. 반 개씩 선택할 수 있고, 평점 없이 리뷰를 남겨도 괜찮아요.</div>
             <label for="reviewText">리뷰 <span class="optional">(선택)</span></label>
             <textarea id="reviewText" rows="4" maxlength="1500" placeholder="맛, 양, 식감 등 자유롭게 평가해 주세요."></textarea>

@@ -39,3 +39,14 @@
 .rating-clear{border:1px solid #eee4d8;background:#fff;border-radius:9px;padding:7px 10px;color:#81796e;font-size:12px}
 .rating-clear.active{border-color:#e9854b;background:#fff0e3;color:#c96831;font-weight:700}
 @media(max-width:380px){.interactive-star-wrap{width:31px;height:39px}.picker-star-row{font-size:29px}.rating-picker{gap:7px}}
+
+/* 오늘의 평균 평점 */
+.daily-average{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 18px;padding:15px 16px;border:1px solid #f0dfca;border-radius:15px;background:linear-gradient(115deg,#fff7ed,#fffdfa)}
+.daily-average>div:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.average-caption{font-size:13px;font-weight:800;color:#6b5140}
+.average-count{font-size:11px;color:#9b8a79}
+.average-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:0}
+.average-stars{display:flex;align-items:center;gap:1px;color:#e99a32;font-size:clamp(14px,3vw,20px);white-space:nowrap}
+.average-stars .star-icon{font-size:inherit}
+.average-score{font-size:19px;color:#b96632;white-space:nowrap}
+@media(max-width:380px){.daily-average{padding:12px;gap:8px}.average-score{font-size:17px}.average-stars{font-size:14px}}
