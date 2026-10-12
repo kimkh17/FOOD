@@ -25,13 +25,26 @@
   }
   function renderRatingPicker(){
     const root=$('ratingPicker'); root.innerHTML='';
-    for(let score=0;score<=10;score++){
-      const btn=document.createElement('button'); btn.type='button'; btn.className='rating-option'+(currentRating===score?' active':'');
-      btn.innerHTML=`<span class="mini-star">${score===0?'—':starString(score/2)}</span>${score===0?'없음':score}`;
-      btn.setAttribute('aria-pressed',String(currentRating===score)); btn.setAttribute('aria-label',score===0?'평점 없음':`${score}점 / 10점 (${score/2}개 별)`);
-      btn.addEventListener('click',()=>{currentRating=score;renderRatingPicker();$('ratingValue').textContent=ratingText(score);});
-      root.appendChild(btn);
+    const stars=document.createElement('div'); stars.className='interactive-stars';
+    stars.setAttribute('role','group'); stars.setAttribute('aria-label','별을 눌러 0점부터 10점까지 선택');
+    for(let i=1;i<=5;i++){
+      const wrap=document.createElement('span'); wrap.className='interactive-star-wrap';
+      const display=document.createElement('span'); display.className='interactive-star-display';
+      display.innerHTML=starString(currentRating/2).replace('star-row','star-row picker-star-row');
+      wrap.appendChild(display);
+      const left=document.createElement('button'); left.type='button'; left.className='star-hit star-hit-left';
+      left.setAttribute('aria-label',`${i-0.5}점 / 10점`); left.setAttribute('title',`${i-0.5}점`);
+      left.addEventListener('click',()=>{currentRating=i*2-1;renderRatingPicker();$('ratingValue').textContent=ratingText(currentRating);});
+      const right=document.createElement('button'); right.type='button'; right.className='star-hit star-hit-right';
+      right.setAttribute('aria-label',`${i}점 / 10점`); right.setAttribute('title',`${i}점`);
+      right.addEventListener('click',()=>{currentRating=i*2;renderRatingPicker();$('ratingValue').textContent=ratingText(currentRating);});
+      wrap.append(left,right); stars.appendChild(wrap);
     }
+    root.appendChild(stars);
+    const clear=document.createElement('button'); clear.type='button'; clear.className='rating-clear'+(currentRating===0?' active':'');
+    clear.textContent='별점 없음'; clear.setAttribute('aria-pressed',String(currentRating===0));
+    clear.addEventListener('click',()=>{currentRating=0;renderRatingPicker();$('ratingValue').textContent=ratingText(0);});
+    root.appendChild(clear);
     $('ratingValue').textContent=ratingText(currentRating);
   }
   function renderCalendar(){

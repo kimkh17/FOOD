@@ -23,3 +23,19 @@
 .star-icon.half .star-filled{position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#e99a32;white-space:nowrap}
 .mini-star .star-row{font-size:14px;gap:0}
 .review-stars .star-row{font-size:16px}
+
+/* Clickable five-star picker: each star has separate half/full hit areas. */
+.rating-picker{display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-wrap:wrap}
+.interactive-stars{display:flex;align-items:center;gap:3px}
+.interactive-star-wrap{position:relative;display:inline-block;width:clamp(34px,7vw,43px);height:46px;cursor:pointer}
+.interactive-star-display{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.picker-star-row{font-size:clamp(31px,6.5vw,40px);gap:0}
+.interactive-star-wrap .star-icon{color:#d9d0c4}
+.interactive-star-wrap .star-icon.full,.interactive-star-wrap .star-icon.half,.interactive-star-wrap .star-icon.half .star-filled{color:#e99a32}
+.interactive-star-wrap .star-icon.empty{color:#d9d0c4}
+.star-hit{position:absolute;top:0;bottom:0;width:50%;z-index:2;border:0;background:transparent;padding:0;border-radius:5px}
+.star-hit-left{left:0}.star-hit-right{right:0}
+.star-hit:focus-visible{outline:2px solid #e9854b;outline-offset:-2px}
+.rating-clear{border:1px solid #eee4d8;background:#fff;border-radius:9px;padding:7px 10px;color:#81796e;font-size:12px}
+.rating-clear.active{border-color:#e9854b;background:#fff0e3;color:#c96831;font-weight:700}
+@media(max-width:380px){.interactive-star-wrap{width:31px;height:39px}.picker-star-row{font-size:29px}.rating-picker{gap:7px}}
