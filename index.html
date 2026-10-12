@@ -65,11 +65,13 @@
             <input id="nickname" type="text" maxlength="24" placeholder="예: 민수" required>
             <label for="foodName">음식 이름</label>
             <input id="foodName" type="text" maxlength="70" placeholder="예: 치즈 듬뿍 페퍼로니 피자" required>
-            <div class="rating-label-row"><label>별점</label><span id="ratingValue" class="rating-value">선택 안 함 · 0점</span></div>
-            <div id="ratingPicker" class="rating-picker" role="group" aria-label="0점부터 5점까지 반 점 단위 별점"></div>
-            <div class="rating-hint">별점을 누르세요. 별점 없이 리뷰를 남겨도 괜찮아요.</div>
+            <div class="rating-label-row"><label>평점</label><span id="ratingValue" class="rating-value">선택 안 함</span></div>
+            <div id="ratingPicker" class="rating-picker" role="group" aria-label="0점부터 10점까지 1점 단위 평점, 별 반 개씩 선택"></div>
+            <div class="rating-hint">별 5개가 10점이에요. 반 개씩 선택할 수 있고, 평점 없이 리뷰를 남겨도 괜찮아요.</div>
             <label for="reviewText">리뷰 <span class="optional">(선택)</span></label>
-            <textarea id="reviewText" rows="5" maxlength="1500" placeholder="맛, 양, 가격, 재주문 의사 등 자유롭게 적어 주세요."></textarea>
+            <textarea id="reviewText" rows="4" maxlength="1500" placeholder="맛, 양, 식감 등 자유롭게 평가해 주세요."></textarea>
+            <label for="cookNote">요리한 사람의 한마디 <span class="optional">(선택)</span></label>
+            <textarea id="cookNote" rows="3" maxlength="700" placeholder="예: 처음 만들어 봤는데 소스가 조금 짰어요! 다음엔 덜 넣어 볼게요."></textarea>
             <div class="form-actions">
               <button type="button" id="cancelEdit" class="secondary-button hidden">취소</button>
               <button type="submit" id="submitReview" class="primary-button grow">리뷰 저장하기</button>

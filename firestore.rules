@@ -2,10 +2,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /foodReviews/{reviewId} {
-      // 로그인한 사용자(이 사이트는 익명 로그인 사용)는 모든 리뷰를 읽을 수 있습니다.
       allow read: if request.auth != null;
 
-      // 새 리뷰의 작성자 UID는 로그인한 사용자 본인의 UID여야 합니다.
       allow create: if request.auth != null
         && request.resource.data.ownerUid == request.auth.uid
         && request.resource.data.foodName is string
@@ -16,12 +14,12 @@ service cloud.firestore {
         && request.resource.data.nickname.size() <= 24
         && request.resource.data.reviewText is string
         && request.resource.data.reviewText.size() <= 1500
-        && request.resource.data.rating is number
+        && request.resource.data.cookNote is string
+        && request.resource.data.cookNote.size() <= 700
+        && request.resource.data.rating is int
         && request.resource.data.rating >= 0
-        && request.resource.data.rating <= 5
-        && request.resource.data.rating * 2 == int(request.resource.data.rating * 2);
+        && request.resource.data.rating <= 10;
 
-      // 리뷰는 작성자 본인만 수정/삭제할 수 있습니다.
       allow update: if request.auth != null
         && resource.data.ownerUid == request.auth.uid
         && request.resource.data.ownerUid == resource.data.ownerUid
@@ -33,12 +31,30 @@ service cloud.firestore {
         && request.resource.data.nickname.size() <= 24
         && request.resource.data.reviewText is string
         && request.resource.data.reviewText.size() <= 1500
-        && request.resource.data.rating is number
+        && request.resource.data.cookNote is string
+        && request.resource.data.cookNote.size() <= 700
+        && request.resource.data.rating is int
         && request.resource.data.rating >= 0
-        && request.resource.data.rating <= 5
-        && request.resource.data.rating * 2 == int(request.resource.data.rating * 2);
+        && request.resource.data.rating <= 10;
 
-      allow delete: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+      allow delete: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
+    }
+
+    match /foodReplies/{replyId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.reviewId is string
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() > 0
+        && request.resource.data.nickname.size() <= 24
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 500;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
     }
   }
 }

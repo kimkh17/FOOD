@@ -6,23 +6,24 @@
   const escapeHTML = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let selectedDate = toISO(today), shownMonth = new Date(today.getFullYear(),today.getMonth(),1);
   let currentRating = 0, reviews = [], currentUser = null, db = null, unsubscribe = null, toastTimer = null;
+  const replyUnsubscribes = new Map();
   const configured = window.FIREBASE_CONFIG &&
     window.FIREBASE_CONFIG.apiKey && !window.FIREBASE_CONFIG.apiKey.startsWith('여기에_') &&
     window.FIREBASE_CONFIG.projectId && !window.FIREBASE_CONFIG.projectId.startsWith('여기에_');
 
   function showToast(message){ const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2800); }
   function setMessage(message,error=false){ $('formMessage').textContent=message; $('formMessage').classList.toggle('error',error); }
-  function ratingText(n){ return n===0?'선택 안 함 · 0점':`${n.toFixed(1).replace('.0','')}점`; }
-  function starString(n){
-    let out=''; for(let i=1;i<=5;i++){ if(n>=i) out+='★'; else if(n>=i-.5) out+='⯪'; else out+='☆'; } return out;
+  function ratingText(n){ return n===0?'선택 안 함':`${n} / 10점`; }
+  function starString(stars){
+    let out=''; for(let i=1;i<=5;i++){ if(stars>=i) out+='★'; else if(stars>=i-.5) out+='⯪'; else out+='☆'; } return out;
   }
   function renderRatingPicker(){
     const root=$('ratingPicker'); root.innerHTML='';
-    for(let i=0;i<=10;i++){
-      const val=i/2, btn=document.createElement('button'); btn.type='button'; btn.className='rating-option'+(currentRating===val?' active':'');
-      btn.innerHTML=`<span class="mini-star">${val===0?'—':starString(val)}</span>${val===0?'없음':val.toFixed(1).replace('.0','')}`;
-      btn.setAttribute('aria-pressed',String(currentRating===val)); btn.setAttribute('aria-label',val===0?'별점 없음':`${val}점`);
-      btn.addEventListener('click',()=>{currentRating=val;renderRatingPicker();$('ratingValue').textContent=ratingText(val);});
+    for(let score=0;score<=10;score++){
+      const btn=document.createElement('button'); btn.type='button'; btn.className='rating-option'+(currentRating===score?' active':'');
+      btn.innerHTML=`<span class="mini-star">${score===0?'—':starString(score/2)}</span>${score===0?'없음':score}`;
+      btn.setAttribute('aria-pressed',String(currentRating===score)); btn.setAttribute('aria-label',score===0?'평점 없음':`${score}점 / 10점 (${score/2}개 별)`);
+      btn.addEventListener('click',()=>{currentRating=score;renderRatingPicker();$('ratingValue').textContent=ratingText(score);});
       root.appendChild(btn);
     }
     $('ratingValue').textContent=ratingText(currentRating);
@@ -52,18 +53,54 @@
     $('selectedDateTitle').textContent=`${d.getMonth()+1}월 ${d.getDate()}일의 음식`;
     $('daySummary').textContent=dayReviews.length?`이 날 기록한 음식 ${dayReviews.length}개`:'';
     const root=$('reviewsList');
+    // 날짜 변경 시 화면에서 사라진 리뷰의 답변 구독을 정리합니다.
+    const visibleIds=new Set(dayReviews.map(r=>r.id));
+    for(const [id,unsub] of replyUnsubscribes){ if(!visibleIds.has(id)){unsub();replyUnsubscribes.delete(id);} }
     if(!dayReviews.length){root.innerHTML='<div class="empty-state"><span class="empty-emoji">🍜</span><strong>아직 기록이 없어요</strong><p>이 날 먹은 음식을 첫 번째로 기록해 보세요.</p></div>';return;}
     root.innerHTML=dayReviews.map(r=>{
-      const rating=r.rating||0, own=currentUser&&r.ownerUid===currentUser.uid;
-      return `<article class="review-card">
+      const rating=Number(r.rating)||0, own=currentUser&&r.ownerUid===currentUser.uid;
+      return `<article class="review-card" data-review-card="${escapeHTML(r.id)}">
         <div class="review-card-top"><div><h3 class="food-title">${escapeHTML(r.foodName)}</h3><div class="review-author">${escapeHTML(r.nickname||'익명')} · ${escapeHTML(r.date)}</div></div>
-        <div class="review-stars" aria-label="${rating}점">${rating?`${starString(rating)}<span class="review-rating-number">${rating.toFixed(1).replace('.0','')}</span>`:'<span class="review-rating-number">별점 없음</span>'}</div></div>
+        <div class="review-stars" aria-label="${rating}점 / 10점">${rating?`${starString(rating/2)}<span class="review-rating-number">${rating}/10</span>`:'<span class="review-rating-number">평점 없음</span>'}</div></div>
         ${r.reviewText?`<p class="review-text">${escapeHTML(r.reviewText)}</p>`:''}
+        ${r.cookNote?`<div class="cook-note"><strong>👩‍🍳 요리한 사람의 한마디</strong><p>${escapeHTML(r.cookNote)}</p></div>`:''}
         ${own?`<div class="review-actions"><button class="text-button" data-edit="${escapeHTML(r.id)}">수정</button><button class="text-button" data-delete="${escapeHTML(r.id)}">삭제</button></div>`:''}
+        <div class="replies-area"><div class="replies-title">💬 답변 <span class="reply-count" data-reply-count="${escapeHTML(r.id)}">불러오는 중…</span></div>
+          <div class="reply-list" data-reply-list="${escapeHTML(r.id)}"></div>
+          <form class="reply-form" data-reply-form="${escapeHTML(r.id)}"><input type="text" maxlength="24" name="replyNickname" placeholder="이름" aria-label="답변 작성자 이름" required><input type="text" maxlength="500" name="replyText" placeholder="리뷰에 답변을 남겨 보세요…" aria-label="답변 내용" required><button type="submit" class="secondary-button">답변</button></form>
+        </div>
       </article>`;
     }).join('');
     root.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editReview(b.dataset.edit)));
     root.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteReview(b.dataset.delete)));
+    root.querySelectorAll('[data-reply-form]').forEach(form=>form.addEventListener('submit',submitReply));
+    dayReviews.forEach(r=>watchReplies(r.id));
+  }
+  function watchReplies(reviewId){
+    if(!db || replyUnsubscribes.has(reviewId)) return;
+    const unsub=db.collection('foodReplies').where('reviewId','==',reviewId).onSnapshot(snapshot=>{
+      const card=document.querySelector(`[data-review-card="${CSS.escape(reviewId)}"]`); if(!card)return;
+      const list=card.querySelector('[data-reply-list]'), count=card.querySelector('[data-reply-count]');
+      const replies=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+      count.textContent=`${replies.length}개`;
+      list.innerHTML=replies.length?replies.map(reply=>`<div class="reply-item"><div><strong>${escapeHTML(reply.nickname||'익명')}</strong><span class="reply-time">${new Date(reply.createdAt||Date.now()).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div><p>${escapeHTML(reply.text)}</p>${currentUser&&reply.ownerUid===currentUser.uid?`<button class="text-button" data-delete-reply="${escapeHTML(reply.id)}">내 답변 삭제</button>`:''}</div>`).join(''):'<p class="no-replies">아직 답변이 없어요. 첫 답변을 남겨 보세요.</p>';
+      list.querySelectorAll('[data-delete-reply]').forEach(btn=>btn.addEventListener('click',()=>deleteReply(btn.dataset.deleteReply)));
+    },err=>{console.error(err);const card=document.querySelector(`[data-review-card="${CSS.escape(reviewId)}"]`);if(card)card.querySelector('[data-reply-count]').textContent='불러오기 실패';});
+    replyUnsubscribes.set(reviewId,unsub);
+  }
+  async function submitReply(e){
+    e.preventDefault(); if(!db||!currentUser){showToast('Firebase 연결을 확인해 주세요.');return;}
+    const form=e.currentTarget, reviewId=form.dataset.replyForm, nickname=form.elements.replyNickname.value.trim(), text=form.elements.replyText.value.trim();
+    if(!nickname||!text)return;
+    const button=form.querySelector('button[type="submit"]');button.disabled=true;
+    try{await db.collection('foodReplies').add({reviewId,nickname,text,ownerUid:currentUser.uid,createdAt:Date.now()});form.elements.replyText.value='';showToast('답변을 등록했어요.');}
+    catch(err){console.error(err);showToast('답변을 저장하지 못했어요. Firestore 규칙을 확인해 주세요.');}
+    finally{button.disabled=false;}
+  }
+  async function deleteReply(id){
+    if(!confirm('이 답변을 삭제할까요?'))return;
+    try{await db.collection('foodReplies').doc(id).delete();showToast('답변을 삭제했어요.');}
+    catch(err){console.error(err);showToast('답변을 삭제하지 못했어요.');}
   }
   function resetForm(){
     $('reviewForm').reset(); $('reviewId').value=''; $('reviewDate').value=selectedDate;
@@ -73,8 +110,8 @@
   function editReview(id){
     const r=reviews.find(x=>x.id===id);if(!r)return;
     $('reviewId').value=r.id;$('reviewDate').value=r.date;$('nickname').value=r.nickname||'';
-    $('foodName').value=r.foodName;$('reviewText').value=r.reviewText||'';
-    currentRating=r.rating||0;renderRatingPicker();$('formTitle').textContent='리뷰 수정하기';
+    $('foodName').value=r.foodName;$('reviewText').value=r.reviewText||'';$('cookNote').value=r.cookNote||'';
+    currentRating=Number(r.rating)||0;renderRatingPicker();$('formTitle').textContent='리뷰 수정하기';
     $('submitReview').textContent='수정 내용 저장';$('cancelEdit').classList.remove('hidden');
     $('formPanel').scrollIntoView({behavior:'smooth',block:'start'});setMessage('수정 후 저장을 눌러 주세요.');
   }
@@ -111,9 +148,9 @@
   $('reviewForm').addEventListener('submit',async e=>{
     e.preventDefault();if(!db||!currentUser){setMessage('먼저 Firebase 설정을 완료해 주세요.',true);return;}
     const id=$('reviewId').value;
-    const payload={date:$('reviewDate').value,nickname:$('nickname').value.trim(),foodName:$('foodName').value.trim(),rating:currentRating,reviewText:$('reviewText').value.trim(),updatedAt:Date.now()};
+    const payload={date:$('reviewDate').value,nickname:$('nickname').value.trim(),foodName:$('foodName').value.trim(),rating:currentRating,reviewText:$('reviewText').value.trim(),cookNote:$('cookNote').value.trim(),updatedAt:Date.now()};
     if(!payload.date||!payload.nickname||!payload.foodName){setMessage('날짜, 작성자 이름, 음식 이름을 입력해 주세요.',true);return;}
-    if(payload.foodName.length>70||payload.reviewText.length>1500){setMessage('입력한 내용이 너무 길어요.',true);return;}
+    if(payload.foodName.length>70||payload.reviewText.length>1500||payload.cookNote.length>700){setMessage('입력한 내용이 너무 길어요.',true);return;}
     $('submitReview').disabled=true;
     try{
       if(id){
