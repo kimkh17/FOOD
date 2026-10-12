@@ -15,25 +15,23 @@
   function setMessage(message,error=false){ $('formMessage').textContent=message; $('formMessage').classList.toggle('error',error); }
   function ratingText(n){ return n===0?'선택 안 함':`${n} / 10점`; }
   function starString(stars){
-    let out=''; for(let i=1;i<=5;i++){ if(stars>=i) out+='★'; else if(stars>=i-.5) out+='⯪'; else out+='☆'; } return out;
+    let out='';
+    for(let i=1;i<=5;i++){
+      if(stars>=i) out+='<span class="star-icon full" aria-hidden="true">★</span>';
+      else if(stars>=i-.5) out+='<span class="star-icon half" aria-hidden="true"><span class="star-empty">☆</span><span class="star-filled">★</span></span>';
+      else out+='<span class="star-icon empty" aria-hidden="true">☆</span>';
+    }
+    return `<span class="star-row">${out}</span>`;
   }
   function renderRatingPicker(){
     const root=$('ratingPicker'); root.innerHTML='';
-    root.classList.add('direct-star-picker');
-    for(let star=1;star<=5;star++){
-      const filled = currentRating >= star*2 ? 100 : currentRating === star*2-1 ? 50 : 0;
-      const wrap=document.createElement('div'); wrap.className='direct-star';
-      wrap.innerHTML=`<span class="star-base" aria-hidden="true">☆</span><span class="star-fill" aria-hidden="true" style="width:${filled}%">★</span>
-        <button type="button" class="star-half-hit left" aria-label="${star-0.5}개 별, ${(star*2)-1}점" title="${(star*2)-1}/10"></button>
-        <button type="button" class="star-half-hit right" aria-label="${star}개 별, ${star*2}점" title="${star*2}/10"></button>`;
-      wrap.querySelector('.left').addEventListener('click',()=>{currentRating=star*2-1;renderRatingPicker();});
-      wrap.querySelector('.right').addEventListener('click',()=>{currentRating=star*2;renderRatingPicker();});
-      root.appendChild(wrap);
+    for(let score=0;score<=10;score++){
+      const btn=document.createElement('button'); btn.type='button'; btn.className='rating-option'+(currentRating===score?' active':'');
+      btn.innerHTML=`<span class="mini-star">${score===0?'—':starString(score/2)}</span>${score===0?'없음':score}`;
+      btn.setAttribute('aria-pressed',String(currentRating===score)); btn.setAttribute('aria-label',score===0?'평점 없음':`${score}점 / 10점 (${score/2}개 별)`);
+      btn.addEventListener('click',()=>{currentRating=score;renderRatingPicker();$('ratingValue').textContent=ratingText(score);});
+      root.appendChild(btn);
     }
-    const none=document.createElement('button'); none.type='button'; none.className='no-rating-button'; none.textContent='별점 없음';
-    none.setAttribute('aria-pressed',String(currentRating===0));
-    none.addEventListener('click',()=>{currentRating=0;renderRatingPicker();});
-    root.appendChild(none);
     $('ratingValue').textContent=ratingText(currentRating);
   }
   function renderCalendar(){

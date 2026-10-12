@@ -13,15 +13,13 @@
 .rating-option .mini-star{font-size:11px;letter-spacing:-1px;white-space:nowrap}
 @media(max-width:380px){.reply-form{grid-template-columns:1fr auto}.reply-form input[name="replyNickname"]{grid-column:1/-1}.reply-form input[name="replyText"]{grid-column:1}.reply-form button{grid-column:2;grid-row:2}}
 
-/* Direct half-star rating: tap/click the left or right half of each star */
-.rating-picker.direct-star-picker{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.direct-star{position:relative;width:39px;height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:37px;line-height:1;cursor:pointer;touch-action:manipulation}
-.star-base,.star-fill{position:absolute;left:0;top:1px;line-height:1;pointer-events:none;white-space:nowrap}
-.star-base{color:#d8d2ca}
-.star-fill{color:#e9854b;overflow:hidden}
-.star-half-hit{position:absolute;top:0;height:100%;width:50%;padding:0;margin:0;border:0;background:transparent;z-index:2;border-radius:5px}
-.star-half-hit.left{left:0}.star-half-hit.right{right:0}
-.star-half-hit:focus-visible{outline:2px solid #e9854b;outline-offset:-2px}
-.no-rating-button{font-size:11px;border:1px solid #eee4d8;border-radius:9px;background:#fff;color:#7f7467;padding:7px 9px;min-height:34px}
-.no-rating-button[aria-pressed="true"]{background:#fff0e3;border-color:#e9854b;color:#c96831;font-weight:700}
-@media(max-width:380px){.direct-star{width:34px;font-size:33px}.rating-picker.direct-star-picker{gap:3px}}
+
+/* Accessible half-star rendering: avoids unsupported Unicode half-star glyphs. */
+.star-row{display:inline-flex;align-items:center;white-space:nowrap;vertical-align:middle;gap:1px}
+.star-icon{position:relative;display:inline-block;line-height:1;letter-spacing:0;color:#e99a32;font-family:Arial,sans-serif}
+.star-icon.full,.star-icon.empty{font-size:1em}
+.star-icon.half{font-size:1em;width:.62em;height:1em;overflow:hidden}
+.star-icon.half .star-empty{position:absolute;left:0;top:0;color:#e99a32;white-space:nowrap}
+.star-icon.half .star-filled{position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#e99a32;white-space:nowrap}
+.mini-star .star-row{font-size:14px;gap:0}
+.review-stars .star-row{font-size:16px}
