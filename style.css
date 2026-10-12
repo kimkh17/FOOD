@@ -41,12 +41,12 @@
 @media(max-width:380px){.interactive-star-wrap{width:31px;height:39px}.picker-star-row{font-size:29px}.rating-picker{gap:7px}}
 
 /* 오늘의 평균 평점 */
-.daily-average{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 18px;padding:15px 16px;border:1px solid #f0dfca;border-radius:15px;background:linear-gradient(115deg,#fff7ed,#fffdfa)}
-.daily-average>div:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}
-.average-caption{font-size:13px;font-weight:800;color:#6b5140}
-.average-count{font-size:11px;color:#9b8a79}
-.average-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:0}
-.average-stars{display:flex;align-items:center;gap:1px;color:#e99a32;font-size:clamp(14px,3vw,20px);white-space:nowrap}
-.average-stars .star-icon{font-size:inherit}
-.average-score{font-size:19px;color:#b96632;white-space:nowrap}
-@media(max-width:380px){.daily-average{padding:12px;gap:8px}.average-score{font-size:17px}.average-stars{font-size:14px}}
+.daily-average{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 18px;padding:16px;border:1px solid #f0dfca;border-radius:15px;background:linear-gradient(115deg,#fff7ed,#fffdfa);min-width:0}
+.average-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.average-caption{display:block;font-size:14px;line-height:1.4;font-weight:800;color:#6b5140}
+.average-count{display:block;font-size:11px;line-height:1.5;color:#9b8a79}
+.average-score-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:0}
+.average-stars{display:flex;align-items:center;gap:1px;color:#e99a32;font-size:clamp(14px,3vw,20px);white-space:nowrap;line-height:1.2}
+.average-stars .star-icon{font-size:inherit;display:inline-block}
+.average-score{font-size:19px;line-height:1.3;color:#b96632;white-space:nowrap}
+@media(max-width:420px){.daily-average{padding:12px;gap:8px}.average-caption{font-size:13px}.average-count{font-size:10px}.average-score{font-size:16px}.average-stars{font-size:14px}}
