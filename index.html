@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf2">
+  <title>오늘 뭐 먹었지? — 음식 기록장</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="음식 기록장 홈"><span class="brand-mark">🍽️</span><span>오늘 뭐 먹었지?</span></a>
+    <span class="shared-pill"><span class="live-dot"></span> 함께 쓰는 기록장</span>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">OUR FOOD DIARY</p>
+        <h1>오늘의 한 끼를<br><span>기록해 보세요.</span></h1>
+        <p class="hero-copy">먹었던 음식, 솔직한 별점, 다시 먹고 싶은 이유까지.</p>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">🥘</div>
+    </section>
+
+    <section class="layout">
+      <div class="main-column">
+        <section class="panel calendar-panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">CALENDAR</p><h2>날짜별 기록</h2></div>
+            <div class="month-nav">
+              <button id="prevMonth" class="icon-button" aria-label="이전 달">‹</button>
+              <strong id="monthLabel"></strong>
+              <button id="nextMonth" class="icon-button" aria-label="다음 달">›</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+          </div>
+          <div id="calendarGrid" class="calendar-grid" aria-label="달력"></div>
+          <div class="calendar-legend"><span class="legend-dot"></span> 리뷰가 있는 날</div>
+        </section>
+
+        <section class="panel reviews-panel">
+          <div class="section-heading reviews-heading">
+            <div><p class="eyebrow">DAILY LOG</p><h2 id="selectedDateTitle">오늘의 음식</h2></div>
+            <button id="addReviewTop" class="primary-button">＋ 리뷰 쓰기</button>
+          </div>
+          <p id="daySummary" class="day-summary"></p>
+          <div id="reviewsList" class="reviews-list"></div>
+        </section>
+      </div>
+
+      <aside class="side-column">
+        <section class="panel form-panel" id="formPanel">
+          <div class="section-heading">
+            <div><p class="eyebrow">NEW REVIEW</p><h2 id="formTitle">음식 리뷰 쓰기</h2></div>
+            <span class="form-icon">✍️</span>
+          </div>
+          <form id="reviewForm">
+            <input type="hidden" id="reviewId">
+            <label for="reviewDate">먹은 날짜</label>
+            <input id="reviewDate" type="date" required>
+            <label for="nickname">작성자 이름</label>
+            <input id="nickname" type="text" maxlength="24" placeholder="예: 민수" required>
+            <label for="foodName">음식 이름</label>
+            <input id="foodName" type="text" maxlength="70" placeholder="예: 치즈 듬뿍 페퍼로니 피자" required>
+            <div class="rating-label-row"><label>별점</label><span id="ratingValue" class="rating-value">선택 안 함 · 0점</span></div>
+            <div id="ratingPicker" class="rating-picker" role="group" aria-label="0점부터 5점까지 반 점 단위 별점"></div>
+            <div class="rating-hint">별점을 누르세요. 별점 없이 리뷰를 남겨도 괜찮아요.</div>
+            <label for="reviewText">리뷰 <span class="optional">(선택)</span></label>
+            <textarea id="reviewText" rows="5" maxlength="1500" placeholder="맛, 양, 가격, 재주문 의사 등 자유롭게 적어 주세요."></textarea>
+            <div class="form-actions">
+              <button type="button" id="cancelEdit" class="secondary-button hidden">취소</button>
+              <button type="submit" id="submitReview" class="primary-button grow">리뷰 저장하기</button>
+            </div>
+            <p id="formMessage" class="form-message" role="status"></p>
+          </form>
+        </section>
+        <section class="tip-card">
+          <span class="tip-emoji">💡</span>
+          <div><strong>우리끼리 함께 기록해요</strong><p>공유 링크를 아는 사람은 리뷰를 볼 수 있어요. 작성자 이름은 자유롭게 입력하면 됩니다.</p></div>
+        </section>
+      </aside>
+    </section>
+    <footer>우리의 맛있는 기록 · 링크를 공유하고 함께 채워 보세요.</footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Firebase 설정을 config.js에 입력한 뒤 사용하세요. -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
